@@ -1,13 +1,8 @@
-using System.Runtime.CompilerServices;
-using Unity.Burst.CompilerServices;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class MechMovement : MonoBehaviour
 {
-
-
-    [Header("Movement settings")]
+    [Header("Movement Settings")]
     public float maxSpeed = 10f;
     public float legRotationSpeed = 90f;
     public float acceleration = 2f;
@@ -16,7 +11,7 @@ public class MechMovement : MonoBehaviour
     [Header("Aiming Settings")]
     public float torsoRotationSpeed = 2f;
     public float turretMaxPitch = 30f;
-    public float turrenMinPitch = -10f;
+    public float turretMinPitch = -10f;
 
     [Header("References")]
     public Transform legs;
@@ -28,26 +23,30 @@ public class MechMovement : MonoBehaviour
     public Camera mainCamera;
     private float currentSpeed = 0f;
 
-
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();        
-        //mainCamera = Camera.main;
+        rb = GetComponent<Rigidbody>();
+        mainCamera = Camera.main;
+
+        // Null checks for critical references
+        if (legs == null || torso == null || turret == null)
+        {
+            Debug.LogError("Critical transforms (legs, torso, turret) are not assigned in the Inspector!");
+        }
     }
 
-
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
         HandleMovement();
         HandleAiming();
 
-        //Debug
+        // Debug
         Debug.DrawRay(turret.position, turret.forward * 10f, Color.yellow);
     }
 
-    void HandleMovement() {
-        //WASD tank-like controls
+    private void HandleMovement()
+    {
+        // WASD tank-like controls
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -57,21 +56,21 @@ public class MechMovement : MonoBehaviour
         {
             currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
         }
-        //decelerate to zero when no input
-        else {
+        else
+        {
             currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, deceleration * Time.deltaTime);
         }
 
-        //rotate legs
+        // Rotate legs
         legs.Rotate(Vector3.up * horizontal * legRotationSpeed * Time.deltaTime);
-        //move foward        
-        rb.linearVelocity = legs.forward * currentSpeed;       
-        
+
+        // Move forward
+        rb.MovePosition(rb.position + legs.forward * currentSpeed * Time.deltaTime);
     }
 
-    void HandleAiming() {
-
-        //get mouse position in world space
+    private void HandleAiming()
+    {
+        // Get mouse position in world space
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -80,23 +79,24 @@ public class MechMovement : MonoBehaviour
             Vector3 targetPos = hit.point;
             targetPos.y = torso.position.y;
 
-            //rotate torso horizontally towards mouse
+            // Rotate torso horizontally towards mouse
             Vector3 torsoDirection = (targetPos - torso.position).normalized;
             Quaternion torsoRotation = Quaternion.LookRotation(torsoDirection);
             torso.rotation = Quaternion.Slerp(torso.rotation, torsoRotation, torsoRotationSpeed * Time.deltaTime);
 
-            //rotate turrets vertically 
+            // Rotate turret vertically
             Vector3 turretDirection = hit.point - turret.position;
-
-            //project direction onto the vertical  plane relative to the turrets forward
             Vector3 horizontalDirection = Vector3.ProjectOnPlane(turretDirection, Vector3.up).normalized;
 
-            //float pitchAngle = Mathf.Clamp(-Vector3.SignedAngle(turretDirection, Vector3.up, turret.right), turrenMinPitch, turretMaxPitch);
+            // Calculate the desired pitch angle
             float pitchAngle = Vector3.SignedAngle(horizontalDirection, turretDirection.normalized, turret.right);
-            pitchAngle = Mathf.Clamp(pitchAngle, turrenMinPitch, turretMaxPitch);
-            turret.localEulerAngles = new Vector3(pitchAngle, 0, 0);
+            pitchAngle = Mathf.Clamp(pitchAngle, turretMinPitch, turretMaxPitch);
 
-            Debug.DrawLine(turret.position, hit.point, Color.red);            
+            // Smoothly interpolate the turret's vertical rotation
+            Quaternion targetTurretRotation = Quaternion.Euler(pitchAngle, turret.localEulerAngles.y, turret.localEulerAngles.z);
+            turret.localRotation = Quaternion.Slerp(turret.localRotation, targetTurretRotation, torsoRotationSpeed * Time.deltaTime); //sharing torso speed for now
+
+            Debug.DrawLine(turret.position, hit.point, Color.red);
         }
     }
 }
