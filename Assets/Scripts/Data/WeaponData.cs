@@ -3,10 +3,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WeaponData", menuName = "Data/Weapon")]
 public class WeaponData : ScriptableObject
 {
+    [Header("General")]
+    public string weaponName = "";
+
+    public int ammoCount;
+
+    public WeaponSlot weaponSlot;
+    public enum WeaponSlot {Primary, Secondary }
+
     [Header("Firing")]
     public float fireRate = 0.5f;
     public float projectileSpeed = 30f;
-    public float recoilForce = 100f;
+    //public float recoilForce = 100f;
 
     [Header("Damage")]
     public float damage = 20f;

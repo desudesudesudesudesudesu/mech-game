@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d711f4eb8c3a8e64aa67671cec09a561, type: 3}
-  m_Name: TestGun
+  m_Name: TestRocket
   m_EditorClassIdentifier: 
-  weaponName: MachineGun
-  ammoCount: 1000
-  weaponSlot: 0
-  fireRate: 0.15
-  projectileSpeed: 150
-  damage: 10
-  explosionRadius: 1
-  projectilePrefab: {fileID: 4609660595502603227, guid: faef316a2262eed4c875a8ab9161a94e, type: 3}
+  weaponName: RocketLauncher
+  ammoCount: 10
+  weaponSlot: 1
+  fireRate: 1
+  projectileSpeed: 60
+  damage: 20
+  explosionRadius: 10
+  projectilePrefab: {fileID: 3068443407988087686, guid: 931f2a122ef53564da366a3b4491ac85, type: 3}
   muzzleFlashPrefab: {fileID: 6530941860300793193, guid: 167b7174475e6d848a1cc420674a2e34, type: 3}
   fireSound: {fileID: 0}
-  projectilePoolTag: TestProjectile
+  projectilePoolTag: TestRocket
   muzzleFlashPoolTag: muzzleFlash
   shellPoolTag: poolShells

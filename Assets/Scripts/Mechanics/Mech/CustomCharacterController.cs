@@ -10,7 +10,7 @@ public class MechMovement : MonoBehaviour
     public Transform legs;
     public Transform torso;
     public Transform turret;
-    public LayerMask groundLayer;
+    public LayerMask targetLayer;
 
     private Rigidbody rb;
     public Camera mainCamera;
@@ -67,7 +67,7 @@ public class MechMovement : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 1000f, groundLayer))
+        if (Physics.Raycast(ray, out hit, 1000f, targetLayer))
         {
             Vector3 targetPos = hit.point;
             targetPos.y = torso.position.y;

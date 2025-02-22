@@ -17,4 +17,8 @@ public class MechData : ScriptableObject
     public float maxTurretPitch = 30f; // Clamp vertical angle
     public float minTurretPitch = -40f;
     public float torsoRotationSpeed = 90f;
+
+    [Header("Weapons")]
+    public int primaryWeaponCount = 2;
+    public int secondaryWeaponCount = 2;
 }

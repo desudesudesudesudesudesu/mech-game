@@ -4,21 +4,41 @@ using System.Collections;
 public class BallisticWeapon : MonoBehaviour
 {
     public WeaponData weaponData;
-    public Transform firePoint;
+    public Transform firePoint;    
     private float _fireTimer;
+    private int ammoCount;
 
+
+    private void Awake()
+    {
+        ammoCount = weaponData.ammoCount;
+    }
     void Update()
     {
         // Handle cooldown
         _fireTimer -= Time.deltaTime;
 
-        // Check for continuous fire
-        if (Input.GetMouseButton(0) && _fireTimer <= 0)
+        // Check for continuous fire on Left mouse for Primary, Right mouse for Secondary 
+        if (Input.GetMouseButton(0) && _fireTimer <= 0 && weaponData.weaponSlot.ToString() == "Primary" && ammoCount > 0)
+        {
+            Fire();
+            ammoCount -= 1;
+            _fireTimer = weaponData.fireRate; // Reset cooldown
+        }
+        if (Input.GetMouseButton(1) && _fireTimer <= 0 && weaponData.weaponSlot.ToString() == "Secondary" && ammoCount > 0)
         {
             Fire();
             _fireTimer = weaponData.fireRate; // Reset cooldown
+            ammoCount -= 1;
         }
     }
+
+    /*
+     * public void Initialize(WeaponData config)
+    {
+       weaponData = config;
+    }
+    */
 
     void Fire()
     {
@@ -49,7 +69,7 @@ public class BallisticWeapon : MonoBehaviour
         yield return new WaitForSeconds(delay);
         obj.SetActive(false);
     }
-
+    /*
     void ApplyRecoil()
     {
         GetComponentInParent<Rigidbody>().AddForce(
@@ -57,4 +77,5 @@ public class BallisticWeapon : MonoBehaviour
             ForceMode.Impulse
         );
     }
+    */
 }
