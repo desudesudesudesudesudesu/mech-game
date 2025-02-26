@@ -21,4 +21,10 @@ public class MechData : ScriptableObject
     [Header("Weapons")]
     public int primaryWeaponCount = 2;
     public int secondaryWeaponCount = 2;
+
+    [Header("Health")]
+    public int hullHealth = 100;
+    public int shieldHealth = 100;
+    public float shieldDelay = 1f;
+    public float shieldSpeed = 5f;
 }

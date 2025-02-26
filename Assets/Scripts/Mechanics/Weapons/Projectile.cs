@@ -23,14 +23,26 @@ public class Projectile : MonoBehaviour
         StartCoroutine(DeactivateAfterLifetime(5f));
     }
 
+
+
     IEnumerator DeactivateAfterLifetime(float delay)
     {
         yield return new WaitForSeconds(delay);
         gameObject.SetActive(false);
     }
 
+
+
     void OnCollisionEnter(Collision collision)
-    {        
+    {
+
+
+        //spawn the FX -- the prefab has it's own script to return to pool since this gameobject will destroy itself with the coroutine it seems
+        GameObject projectileExplosion = ObjectPool.Instance.SpawnFromPool(
+            weaponData.projectileExplosion.name,
+            transform.position, transform.rotation.normalized);
+        
+
         //Simple explosion 
         if (weaponData.explosionRadius > 0)
         {
@@ -47,7 +59,9 @@ public class Projectile : MonoBehaviour
             }
         }
 
+        
         // Return to pool on hit
+        gameObject.
         gameObject.SetActive(false);
     }
 

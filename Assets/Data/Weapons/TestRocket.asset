@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: TestRocket
   m_EditorClassIdentifier: 
   weaponName: RocketLauncher
-  ammoCount: 10
+  ammoCount: 50
   weaponSlot: 1
   fireRate: 1
   projectileSpeed: 60
   damage: 20
   explosionRadius: 10
   projectilePrefab: {fileID: 3068443407988087686, guid: 931f2a122ef53564da366a3b4491ac85, type: 3}
+  projectileExplosion: {fileID: 3263589328273131255, guid: 591bb77a6e0703a4aaceaa1f5bc9f2fe, type: 3}
   muzzleFlashPrefab: {fileID: 6530941860300793193, guid: 167b7174475e6d848a1cc420674a2e34, type: 3}
   fireSound: {fileID: 0}
   projectilePoolTag: TestRocket
   muzzleFlashPoolTag: muzzleFlash
+  projectileExplosionPoolTag: TestRocketExplosion
   shellPoolTag: poolShells

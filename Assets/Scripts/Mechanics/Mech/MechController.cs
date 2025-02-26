@@ -3,6 +3,10 @@ using UnityEngine;
 public class MechController : MonoBehaviour
 {
 
+    [SerializeField] private BallisticWeapon[] _primaryWeapons;
+    [SerializeField] private BallisticWeapon[] _secondaryWeapons;
+    
+
     /*
     [SerializeField] private MechData _mechConfig;
     [SerializeField] private WeaponData[] _primaryWeapons;
@@ -36,4 +40,26 @@ public class MechController : MonoBehaviour
         weaponScript.Initialize(config);
     }
     */
+
+    private void Update()
+    {      
+
+        // Check for continuous fire on Left mouse for Primary, Right mouse for Secondary 
+        if (Input.GetMouseButton(0))
+        {
+            foreach (BallisticWeapon weapon in _primaryWeapons)
+            {
+                weapon.Fire();                
+                
+                //if (weapon.isLeftGun) { UIManager.Instance.SetLeftAmmo(ammoCount, 1000); } else { UIManager.Instance.SetRightAmmo(ammoCount, 1000); } // ugly stuff
+            }
+        }
+        if (Input.GetMouseButton(1))
+        {
+            foreach (BallisticWeapon weapon in _secondaryWeapons) {
+                weapon.Fire();
+            }
+        }
+    }
 }
+

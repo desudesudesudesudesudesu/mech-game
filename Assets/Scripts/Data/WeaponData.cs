@@ -22,12 +22,15 @@ public class WeaponData : ScriptableObject
 
     [Header("Visuals")]
     public GameObject projectilePrefab;
+    public GameObject projectileExplosion;
     public GameObject muzzleFlashPrefab;
+    public GameObject bulletShellPrefab;
     public AudioClip fireSound;
 
     [Header("Visuals")]
     public string projectilePoolTag;
     public string muzzleFlashPoolTag;
+    public string projectileExplosionPoolTag;
     public string shellPoolTag;
 
 }

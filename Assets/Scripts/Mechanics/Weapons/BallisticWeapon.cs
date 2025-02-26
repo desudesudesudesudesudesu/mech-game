@@ -4,7 +4,9 @@ using System.Collections;
 public class BallisticWeapon : MonoBehaviour
 {
     public WeaponData weaponData;
-    public Transform firePoint;    
+    public Transform firePoint;
+    public Transform shellEjectPoint;
+    public bool isLeftGun; //dirty way to figure out if the gun is on the left or right of the mech to handle ammo independently for no apparant reason
     private float _fireTimer;
     private int ammoCount;
 
@@ -12,25 +14,12 @@ public class BallisticWeapon : MonoBehaviour
     private void Awake()
     {
         ammoCount = weaponData.ammoCount;
+        //if (isLeftGun) { UIManager.Instance.SetLeftAmmo(ammoCount, 1000); } else { UIManager.Instance.SetRightAmmo(ammoCount, 1000); } // ugly stuff
     }
     void Update()
     {
         // Handle cooldown
         _fireTimer -= Time.deltaTime;
-
-        // Check for continuous fire on Left mouse for Primary, Right mouse for Secondary 
-        if (Input.GetMouseButton(0) && _fireTimer <= 0 && weaponData.weaponSlot.ToString() == "Primary" && ammoCount > 0)
-        {
-            Fire();
-            ammoCount -= 1;
-            _fireTimer = weaponData.fireRate; // Reset cooldown
-        }
-        if (Input.GetMouseButton(1) && _fireTimer <= 0 && weaponData.weaponSlot.ToString() == "Secondary" && ammoCount > 0)
-        {
-            Fire();
-            _fireTimer = weaponData.fireRate; // Reset cooldown
-            ammoCount -= 1;
-        }
     }
 
     /*
@@ -40,28 +29,44 @@ public class BallisticWeapon : MonoBehaviour
     }
     */
 
-    void Fire()
+    public void Fire()
     {
-        // Spawn projectile
-        GameObject projectile = ObjectPool.Instance.SpawnFromPool(
-            weaponData.projectilePrefab.name,
-            firePoint.position,
-            firePoint.rotation
-        );
-        Projectile projectileScript = projectile.GetComponent<Projectile>();
-        projectileScript.weaponData = weaponData;
-        projectileScript.Launch(firePoint.forward);
+        if (ammoCount > 0 && _fireTimer <= 0)
+        {
+            // Spawn projectile
+            GameObject projectile = ObjectPool.Instance.SpawnFromPool(
+                weaponData.projectilePrefab.name,
+                firePoint.position,
+                firePoint.rotation
+            );
 
-        // Muzzle flash (auto-return after 0.1s)
-        GameObject muzzleFlash = ObjectPool.Instance.SpawnFromPool(
-            weaponData.muzzleFlashPrefab.name,
-            firePoint.position,
-            firePoint.rotation
-        );
-        StartCoroutine(ReturnToPoolAfterDelay(muzzleFlash, 0.1f));
+            Projectile projectileScript = projectile.GetComponent<Projectile>();
+            projectileScript.weaponData = weaponData;
+            projectileScript.Launch(firePoint.forward);
 
-        // Recoil
-       // ApplyRecoil();
+            // Muzzle flash (auto-return after 0.1s)
+            GameObject muzzleFlash = ObjectPool.Instance.SpawnFromPool(
+                weaponData.muzzleFlashPrefab.name,
+                firePoint.position,
+                firePoint.rotation
+            );
+            StartCoroutine(ReturnToPoolAfterDelay(muzzleFlash, 0.1f));
+
+            if (weaponData.bulletShellPrefab != null)
+            {
+                GameObject bulletShell = ObjectPool.Instance.SpawnFromPool(
+                    weaponData.bulletShellPrefab.name,
+                    shellEjectPoint.position,
+                    shellEjectPoint.rotation
+                );
+                StartCoroutine(ReturnToPoolAfterDelay(muzzleFlash, 10f));
+            }
+
+            ammoCount -= 1;
+            _fireTimer = weaponData.fireRate;
+            // Recoil
+            // ApplyRecoil();
+        }
     }
 
     System.Collections.IEnumerator ReturnToPoolAfterDelay(GameObject obj, float delay)
